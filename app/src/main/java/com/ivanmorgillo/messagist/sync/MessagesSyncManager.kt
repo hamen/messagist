@@ -1,6 +1,7 @@
 package com.ivanmorgillo.messagist.sync
 
 import android.content.Context
+import android.content.SharedPreferences
 import arrow.core.Try
 import arrow.core.extensions.`try`.monad.binding
 import arrow.core.success
@@ -21,21 +22,28 @@ class MessagesSyncManagerImpl(
     private val gson: Gson,
     private val sqlDriver: SqlDriver
 ) : MessagesSyncManager {
+    private val NEEDS_TO_SYNC_KEY = "NEEDS_TO_SYNC"
 
     private val database: Database by lazy { Database(sqlDriver) }
+    private val sharedPreferences: SharedPreferences by lazy { context.getSharedPreferences("sync", Context.MODE_PRIVATE) }
 
     override suspend fun sync(): Try<Boolean> = withContext(Dispatchers.IO) {
-        loadJson()
-            .flatMap { parseJson(it) }
-            .flatMap {
-                binding {
-                    storeUsers(it.users)
-                    storeMessages(it.messages)
-                    it.messages.forEach {
-                        storeAttachments(it.id, it.attachments)
-                    }
-                }.flatMap { true.success() }
-            }
+        if (needsToSync()) {
+            loadJson()
+                .flatMap { parseJson(it) }
+                .flatMap {
+                    binding {
+                        storeUsers(it.users)
+                        storeMessages(it.messages)
+                        it.messages.forEach {
+                            storeAttachments(it.id, it.attachments)
+                        }
+                        syncHappened()
+                    }.flatMap { true.success() }
+                }
+        } else {
+            true.success()
+        }
     }
 
     private fun loadJson(): Try<String> {
@@ -78,5 +86,13 @@ class MessagesSyncManagerImpl(
                 thumbnail = it.thumbnailUrl
             )
         }
+    }
+
+    suspend fun needsToSync(): Boolean = withContext(Dispatchers.IO) {
+        sharedPreferences.getBoolean(NEEDS_TO_SYNC_KEY, true)
+    }
+
+    private fun syncHappened(): Try<Boolean> = Try {
+        sharedPreferences.edit().putBoolean(NEEDS_TO_SYNC_KEY, false).commit()
     }
 }
