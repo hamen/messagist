@@ -1,6 +1,8 @@
-selectAll:
-SELECT *
-FROM message;
+messages:
+SELECT M.id, M.content, A.thumbnail, A.url, A.title, U.name, U.avatarUrl
+FROM message M
+LEFT JOIN attachment A ON messageid = M.id
+LEFT JOIN user U ON userId = U.id;
 
 insert:
 INSERT INTO message(id, userId, content)

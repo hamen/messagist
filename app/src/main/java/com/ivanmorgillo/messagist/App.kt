@@ -10,6 +10,7 @@ import com.squareup.sqldelight.db.SqlDriver
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import timber.log.Timber
@@ -58,6 +59,13 @@ val appModule = module {
             context = androidApplication(),
             gson = Gson(),
             sqlDriver = get()
+        )
+    }
+
+    viewModel {
+        MessageListViewModel(
+            syncManager = get(),
+            database = Database(driver = get())
         )
     }
 }
