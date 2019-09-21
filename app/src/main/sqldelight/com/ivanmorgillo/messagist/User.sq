@@ -1,0 +1,7 @@
+selectAll:
+SELECT *
+FROM user;
+
+insert:
+INSERT INTO user(id, name, avatarUrl)
+VALUES (?, ?, ?);

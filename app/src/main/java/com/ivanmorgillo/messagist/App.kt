@@ -2,6 +2,12 @@ package com.ivanmorgillo.messagist
 
 import android.app.Application
 import android.os.StrictMode
+import com.google.gson.Gson
+import com.ivanmorgillo.messagist.sync.MessagesSyncManager
+import com.ivanmorgillo.messagist.sync.MessagesSyncManagerImpl
+import com.squareup.sqldelight.android.AndroidSqliteDriver
+import com.squareup.sqldelight.db.SqlDriver
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -45,7 +51,15 @@ class App : Application() {
 }
 
 val appModule = module {
+    single<SqlDriver> { AndroidSqliteDriver(Database.Schema, androidContext(), "messagist.db") }
 
+    single<MessagesSyncManager> {
+        MessagesSyncManagerImpl(
+            context = androidApplication(),
+            gson = Gson(),
+            sqlDriver = get()
+        )
+    }
 }
 
 class LineNumberDebugTree : Timber.DebugTree() {

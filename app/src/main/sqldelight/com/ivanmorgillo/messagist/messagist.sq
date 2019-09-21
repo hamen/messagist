@@ -1,0 +1,22 @@
+CREATE TABLE user (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  avatarUrl TEXT NOT NULL
+);
+
+CREATE TABLE message (
+  id INTEGER NOT NULL PRIMARY KEY,
+  userId INTEGER NOT NULL,
+  content TEXT NOT NULL,
+  FOREIGN KEY(userId) REFERENCES user(id)
+);
+
+CREATE TABLE attachment (
+    id TEXT NOT NULL PRIMARY KEY,
+    messageid INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    thumbnail TEXT NOT NULL,
+    FOREIGN KEY(messageid) REFERENCES message(id)
+);
+

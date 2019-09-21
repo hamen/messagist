@@ -1,0 +1,7 @@
+selectAll:
+SELECT *
+FROM attachment;
+
+insert:
+INSERT INTO attachment(id, messageid, title, url, thumbnail)
+VALUES (?, ?, ?, ?, ?);

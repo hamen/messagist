@@ -1,0 +1,7 @@
+selectAll:
+SELECT *
+FROM message;
+
+insert:
+INSERT INTO message(id, userId, content)
+VALUES (?, ?, ?);
