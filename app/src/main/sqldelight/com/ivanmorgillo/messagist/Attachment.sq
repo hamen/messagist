@@ -5,3 +5,7 @@ FROM attachment;
 insert:
 INSERT INTO attachment(id, messageid, title, url, thumbnail)
 VALUES (?, ?, ?, ?, ?);
+
+delete:
+DELETE FROM attachment
+WHERE id = ?;

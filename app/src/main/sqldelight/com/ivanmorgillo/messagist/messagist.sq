@@ -17,6 +17,6 @@ CREATE TABLE attachment (
     title TEXT NOT NULL,
     url TEXT NOT NULL,
     thumbnail TEXT NOT NULL,
-    FOREIGN KEY(messageid) REFERENCES message(id)
+    FOREIGN KEY(messageid) REFERENCES message(id) ON DELETE CASCADE
 );
 

@@ -3,6 +3,9 @@ package com.ivanmorgillo.messagist
 import android.app.Application
 import android.os.StrictMode
 import com.google.gson.Gson
+import com.ivanmorgillo.messagist.messages.MessageListViewModel
+import com.ivanmorgillo.messagist.messages.MessageRepository
+import com.ivanmorgillo.messagist.messages.MessageRepositoryImpl
 import com.ivanmorgillo.messagist.sync.MessagesSyncManager
 import com.ivanmorgillo.messagist.sync.MessagesSyncManagerImpl
 import com.squareup.sqldelight.android.AndroidSqliteDriver
@@ -53,6 +56,7 @@ class App : Application() {
 
 val appModule = module {
     single<SqlDriver> { AndroidSqliteDriver(Database.Schema, androidContext(), "messagist.db") }
+    single<Database> { Database(driver = get()) }
 
     single<MessagesSyncManager> {
         MessagesSyncManagerImpl(
@@ -62,11 +66,15 @@ val appModule = module {
         )
     }
 
-    viewModel {
-        MessageListViewModel(
+    single<MessageRepository> {
+        MessageRepositoryImpl(
             syncManager = get(),
-            database = Database(driver = get())
+            database = get()
         )
+    }
+
+    viewModel {
+        MessageListViewModel(messageRepository = get())
     }
 }
 

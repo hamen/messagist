@@ -1,9 +1,14 @@
-messages:
-SELECT M.id, M.content, A.thumbnail, A.url, A.title, U.name, U.avatarUrl
+message:
+SELECT M.id, M.content, M.userId, A.thumbnail, A.url, A.title, A.id AS attachmentId, U.name, U.avatarUrl
 FROM message M
-LEFT JOIN attachment A ON messageid = M.id
-LEFT JOIN user U ON userId = U.id;
+LEFT JOIN user U ON U.id = M.userId
+LEFT JOIN attachment A ON A.messageid = M.id
+LIMIT :limit OFFSET :offset;
 
 insert:
 INSERT INTO message(id, userId, content)
 VALUES (?, ?, ?);
+
+delete:
+DELETE FROM message
+WHERE id = ?;
